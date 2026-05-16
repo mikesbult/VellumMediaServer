@@ -29,24 +29,18 @@ public class MediaClient(HttpClient httpClient)
     public async Task DeleteMediaAsync(Guid id)
     => await httpClient.DeleteAsync($"medias/{id}");
 
-    public async Task<AnalyzeMediaResponse?> AnalyzeUrlAsync(string url)
+   public async Task<AnalyzeMediaResponse?> AnalyzeUrlAsync(string url)
 {
-    // Ensure your API has the GET /
-    // medias/analyze endpoint set up!
     string encodedUrl = Uri.EscapeDataString(url);
-    bool isLocal = httpClient.BaseAddress?.Host == "localhost";
-    //return await httpClient.GetFromJsonAsync<AnalyzeMediaResponse>($"medias/analyze?url={Uri.EscapeDataString(url)}");
-if (isLocal)
-    {
-        // 2. Keep the original exact string that your local setup loves
-        return await httpClient.GetFromJsonAsync<AnalyzeMediaResponse>($"medias/analyze?url={encodedUrl}");
-    }
-    else
-        {
-            
-        string defaultType = "VIDEO";
-        return await httpClient.GetFromJsonAsync<AnalyzeMediaResponse>($"download?url={encodedUrl}&type={defaultType}");
-    }
+
+#if DEBUG
+    // 1. This block ONLY runs when you press play on your local computer (Debug mode)
+    return await httpClient.GetFromJsonAsync<AnalyzeMediaResponse>($"medias/analyze?url={encodedUrl}");
+#else
+    // 2. This block ONLY runs when Render compiles it for production (Release mode)
+    string defaultType = "VIDEO";
+    return await httpClient.GetFromJsonAsync<AnalyzeMediaResponse>($"download?url={encodedUrl}&type={defaultType}");
+#endif
 }
 
 public async Task ClearHistoryAsync()
