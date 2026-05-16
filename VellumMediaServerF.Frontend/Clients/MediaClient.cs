@@ -31,16 +31,8 @@ public class MediaClient(HttpClient httpClient)
 
    public async Task<AnalyzeMediaResponse?> AnalyzeUrlAsync(string url)
 {
-    string encodedUrl = Uri.EscapeDataString(url);
-
-#if DEBUG
-    // 1. This block ONLY runs when you press play on your local computer (Debug mode)
+    var encodedUrl = Uri.EscapeDataString(url);
     return await httpClient.GetFromJsonAsync<AnalyzeMediaResponse>($"medias/analyze?url={encodedUrl}");
-#else
-    // 2. This block ONLY runs when Render compiles it for production (Release mode)
-    string defaultType = "VIDEO";
-    return await httpClient.GetFromJsonAsync<AnalyzeMediaResponse>($"download?url={encodedUrl}&type={defaultType}");
-#endif
 }
 
 public async Task ClearHistoryAsync()
@@ -48,6 +40,14 @@ public async Task ClearHistoryAsync()
     await httpClient.DeleteAsync("medias/clear-history");
 }
 
+public string BuildDownloadUrl(string url, string type)
+{
+    if (httpClient.BaseAddress is null)
+        throw new InvalidOperationException("HttpClient BaseAddress is not configured.");
+
+    var encodedUrl = Uri.EscapeDataString(url);
+    return new Uri(httpClient.BaseAddress, $"medias/download?url={encodedUrl}&type={type}").ToString();
+}
 
 }
 

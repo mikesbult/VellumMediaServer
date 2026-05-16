@@ -1,45 +1,31 @@
 using VellumMediaServerF.Frontend.Clients;
 using VellumMediaServerF.Frontend.Components;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents();
 
-/*var VellumMediaServerFApiUrl = builder.Configuration["VellumMediaServerFApiUrl"] ??
-    throw new Exception("VellumMediaServerFApiUrl is not set");*/
+var apiBaseUrl =
+    Environment.GetEnvironmentVariable("ApiBaseUrl")
+    ?? builder.Configuration["VellumMediaServerFApiUrl"]
+    ?? "http://localhost:5249/";
 
-    // 1. Checks Render first for the environment variable 'ApiBaseUrl'
-// 2. Falls back to your local appsettings.json string if you are running locally
-var VellumMediaServerFApiUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") 
-                              ?? builder.Configuration["VellumMediaServerFApiUrl"]
-                              ?? "http://localhost:5249";
+apiBaseUrl = apiBaseUrl.TrimEnd('/') + "/";
 
-builder.Services.AddHttpClient<MediaClient>(
-    client => client.BaseAddress = new Uri(VellumMediaServerFApiUrl));
-
-    builder.Services.AddHttpClient<CategorysClient>(    
-    client => client.BaseAddress = new Uri(VellumMediaServerFApiUrl));
-
-
-/*builder.Services.AddHttpClient<MediaClient>(client => 
-{
-    client.BaseAddress = new Uri("http://localhost:5249/"); 
-});*/
-
+builder.Services.AddHttpClient<MediaClient>(c => c.BaseAddress = new Uri(apiBaseUrl));
+builder.Services.AddHttpClient<CategorysClient>(c => c.BaseAddress = new Uri(apiBaseUrl));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseAntiforgery();
 
 app.MapStaticAssets();

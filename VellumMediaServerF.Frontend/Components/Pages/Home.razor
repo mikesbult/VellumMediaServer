@@ -364,8 +364,11 @@
         //StateHasChanged();
   
 
-        var downloadUrl = $"http://localhost:5249/medias/download?url={Uri.EscapeDataString(urlInput)}&type={type}";
-        await JS.InvokeVoidAsync("location.assign", downloadUrl);
+        //var downloadUrl = $"/medias/download?url={Uri.EscapeDataString(urlInput)}&type={type}";
+        //await JS.InvokeVoidAsync("location.assign", downloadUrl);
+
+        var downloadUrl = MediaClient.BuildDownloadUrl(urlInput, type);
+await JS.InvokeVoidAsync("location.assign", downloadUrl);
 
     await Task.Delay(7000); 
     showSuccess = true;
