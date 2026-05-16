@@ -7,8 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-var VellumMediaServerFApiUrl = builder.Configuration["VellumMediaServerFApiUrl"] ??
-    throw new Exception("VellumMediaServerFApiUrl is not set");
+/*var VellumMediaServerFApiUrl = builder.Configuration["VellumMediaServerFApiUrl"] ??
+    throw new Exception("VellumMediaServerFApiUrl is not set");*/
+
+    // 1. Checks Render first for the environment variable 'ApiBaseUrl'
+// 2. Falls back to your local appsettings.json string if you are running locally
+var VellumMediaServerFApiUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") 
+                              ?? builder.Configuration["VellumMediaServerFApiUrl"]
+                              ?? "http://localhost:5249";
 
 builder.Services.AddHttpClient<MediaClient>(
     client => client.BaseAddress = new Uri(VellumMediaServerFApiUrl));
@@ -17,10 +23,10 @@ builder.Services.AddHttpClient<MediaClient>(
     client => client.BaseAddress = new Uri(VellumMediaServerFApiUrl));
 
 
-builder.Services.AddHttpClient<MediaClient>(client => 
+/*builder.Services.AddHttpClient<MediaClient>(client => 
 {
     client.BaseAddress = new Uri("http://localhost:5249/"); 
-});
+});*/
 
 
 var app = builder.Build();
