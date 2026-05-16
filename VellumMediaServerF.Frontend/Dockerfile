@@ -2,10 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Match your exact folder structure
+# Copy the project file using the explicit subfolder path
 COPY ["VellumMediaServerF.Frontend/VellumMediaServerF.Frontend.csproj", "VellumMediaServerF.Frontend/"]
 RUN dotnet restore "VellumMediaServerF.Frontend/VellumMediaServerF.Frontend.csproj"
 
+# Copy everything else and publish
 COPY . .
 WORKDIR "/src/VellumMediaServerF.Frontend"
 RUN dotnet publish "VellumMediaServerF.Frontend.csproj" -c Release -o /app/publish /p:UseAppHost=false
