@@ -1,0 +1,407 @@
+﻿@page "/"
+@inject MediaClient MediaClient
+@rendermode InteractiveServer
+@using VellumMediaServerF.Frontend.Models
+@inject NavigationManager Nav
+@inject HttpClient Http
+@inject CategorysClient CategorysClient
+@inject IJSRuntime JS
+
+<PageTitle>Vellum Media Library</PageTitle>
+
+
+<div class="container mobile-app-frame p-3 my-5">
+    <div class="card shadow mb-4 border-0">
+        <div class="card-body">
+            <h5 class="text-center mb-3">Vellum Media Analyzer(VMA)</h5>
+           <div class="input-group">
+        
+       
+        <input class="form-control @(!IsValidUrl && !string.IsNullOrEmpty(urlInput) ? "is-invalid" : "")" 
+               @bind="urlInput" 
+               @bind:event="oninput" 
+               placeholder="Paste link here..." />
+
+               <div class="d-flex align-items-center gap-2 mx-1">
+        <button type="button" class="btn btn-outline-danger shadow flex-grow-1 py-2 fw-semibold d-flex align-items-center justify-content-center ms-2" 
+        data-bs-toggle="tooltip"
+             data-bs-placement="top" title="Clear pasted link"@onclick="ClearInput">
+            <i class="bi bi-trash3"></i> Clear
+        </button>
+               
+        <button class="btn btn-analyze shadow btn-large" @onclick="AnalyzeUrl" disabled="@(isBusy || !IsValidUrl)">
+            @(isBusy ? "..." : "Analyze")
+        </button>
+    </div>
+    </div>
+            @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="text-danger small mt-2">@errorMessage</div>
+        }
+
+            @if (isDownloading)
+{
+    <div class="mt-3">
+        @if (showSuccess)
+        {
+            <div class="text-center">
+                <span class="text-success fw-bold">✅ File Sent to Browser! Check your downloads.</span>
+            </div>
+        }
+        else
+        {
+            <div class="progress" style="height: 10px; border-radius: 5px;">
+                @* An animated moving stripe bar is much better for uncertain wait times *@
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                     style="width: 100%"></div>
+            </div>
+            <div class="text-center mt-1">
+                <small class="text-muted animate-pulse">Server is processing media... Please wait.</small>
+            </div>
+        }
+    </div>
+}
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Oops!</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick='() => errorMessage = ""'></button>
+        </div>
+    }
+
+  <div class="history-section mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-2 " data-bs-toggle="tooltip"
+             data-bs-placement="top" title="Downloads History">
+        <h6 class="mb-0 ">Recent Downloads</h6>
+        
+        @if (downloadHistory.Any())
+        {
+            <button class="btn btn-sm btn-link text-danger p-0 text-decoration-none" data-bs-toggle="tooltip"
+             data-bs-placement="top" title="Clear History"@onclick=
+            "ClearHistory">
+                Clear History
+            </button>
+        }
+    </div>
+    
+    <div class="list-group">
+        @foreach (var item in downloadHistory.OrderByDescending(x => x.SavedAt).Take(5))
+        {
+            @* --- REPLACE YOUR OLD DIV WITH THIS ONE --- *@
+            <div class="list-group-item d-flex align-items-center rounded mb-2 border-0 shadow-sm">
+                @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
+                {
+                    <img src="@item.ThumbnailUrl" class="rounded me-3" style="width: 80px; height: 45px; object-fit: cover;" />
+                }
+                <div class="flex-grow-1 text-truncate">
+                    <small class="text-muted d-block">@item.SavedAt.ToLocalTime().ToString("g")</small>
+                    <span class="text-dark">@item.Title</span>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="tooltip" 
+                data-bs-placement="top" title="Copy To Clipboard"@onclick='() => 
+                    CopyToClipboard(item.Title)'>
+                    <i class="bi bi-copy"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+</div>
+
+
+
+@if (showDownloadModal && preview != null)
+{
+    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow" style="border-radius: 15px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Ready to Download?</h5>
+                    <button type="button" class="btn-close" @onclick="() => showDownloadModal = false"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h6>@preview.Title</h6>
+                    <div class="d-grid gap-2 mt-3">
+                        <button class="btn btn-success" @onclick='() => Download("video")'>Download MP4 Video</button>
+                        <button class="btn btn-info text-white" @onclick='() => Download("mp3")'>Download MP3 Audio</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="container-fluid my-5 mx-auto">
+    <div class="text-center mb-4">
+        <h4 class="fw-bold text-dark">Vellum Media Analyzer(VMA)</h4>
+        <p class="text-muted small px-3">
+            Download videos and media from supported social platforms instantly. The process is streamlined, fast, and completely secure!
+        </p>
+    </div>
+
+    <div class="row g-4 justify-content-center align-items-stretch">
+        <div class="col-12 col-md-4">
+            <div class="card h-80 border-0 shadow p-4 text-center guide-step-card position-relative">
+                <div class="step-badge">1</div>
+                
+                <div class="image-container-frame">
+                    <img src="Images/logo1.png" alt="logo1" class="img-fluid rounded-3" />
+                </div>
+
+                <div class="step-icon-wrapper my-3 mx-auto text-primary">
+                    <i class="bi bi-link-45deg fs-2"></i>
+                </div>
+                <h5 class="fw-bold fs-6 text-dark mt-2">Copy Media Link</h5>
+                <p class="text-muted small mb-0 mt-2">
+                    Find the public video you want to save and copy the link from the app's "Share" menu or the address bar in your web browser.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card h-80 border-0 shadow p-4 text-center guide-step-card position-relative">
+                <div class="step-badge">2</div>
+                
+                <div class="image-container-frame">
+                    <img src="Images/logo2.png" alt="logo2" class="img-fluid rounded-3" />
+                </div>
+
+                <div class="step-icon-wrapper my-3 mx-auto text-info-custom">
+                    <i class="bi bi-clipboard-plus fs-2"></i>
+                </div>
+                <h5 class="fw-bold fs-6 text-dark mt-2">Paste into Vellum</h5>
+                <p class="text-muted small mb-0 mt-2">
+                    Open the VMA application, paste your link into the analyzer input engine bar, and hit the "Analyze" action trigger button.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="card h-80 border-0 shadow p-4 text-center guide-step-card position-relative">
+                <div class="step-badge">3</div>
+                
+                <div class="image-container-frame">
+                    <img src="images/logo3.png" alt="logo3" class="img-fluid rounded-3" />
+                </div>
+
+                <div class="step-icon-wrapper my-3 mx-auto text-success">
+                    <i class="bi bi-cloud-arrow-down fs-2"></i>
+                </div>
+                <h5 class="fw-bold fs-6 text-dark mt-2">Vellum Data Insight</h5>
+                <p class="text-muted small mb-0 mt-2">
+                    After rapid metadata extraction processing, 
+                    evaluate detailed video statistics and pick your preferred MP4 or 
+                    high-fidelity audio download stream options.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid my-5 faq-section mx-auto">
+    <div class="text-center mb-4">
+        <h3 class="fw-bold text-dark">Frequently Asked Questions</h3>
+    </div>
+
+    <div class="accordion justify-content-center mx-auto" id="vellumFaqAccordion" style="max-width: 950px;">
+        
+        <div class="accordion-item mb-3 border-0 shadow rounded-4">
+            <h2 class="accordion-header" id="faqHeadingOne">
+                <button class="accordion-button collapsed fw-bold text-dark rounded-4 " type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="false" aria-controls="faqCollapseOne">
+                    Is it possible to download videos from private accounts?
+                </button>
+            </h2>
+            <div id="faqCollapseOne" class="accordion-collapse collapse" aria-labelledby="faqHeadingOne" data-bs-parent="#vellumFaqAccordion">
+                <div class="accordion-body text-dark large ">
+                    Vellum Media Analyzer does not allow you to scrape or 
+                    parse media from private profiles or locked accounts. 
+                    Please ensure you are copying links from public posts 
+                    and that you are not infringing on copyright or content creator guidelines.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item mb-3 border-0 shadow rounded-4">
+            <h2 class="accordion-header" id="faqHeadingTwo">
+                <button class="accordion-button collapsed fw-bold text-dark rounded-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
+                    Does Vellum Media Analyzer have any download limits?
+                </button>
+            </h2>
+            <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#vellumFaqAccordion">
+                <div class="accordion-body text-dark large">
+                    Absolutely not! You can process and extract video strings or high-quality audio files as many times as you like. There are no throttles or daily caps on analysis processing.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item mb-3 border-0 shadow rounded-4">
+            <h2 class="accordion-header" id="faqHeadingThree">
+                <button class="accordion-button collapsed fw-bold text-dark rounded-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseThree" aria-expanded="false" aria-controls="faqCollapseThree">
+                    What formats are supported for extraction?
+                </button>
+            </h2>
+            <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#vellumFaqAccordion">
+                <div class="accordion-body text-dark large">
+                    Currently, the engine extracts the highest available 
+                    presentation streams directly into standard **MP4 Video** 
+                    formats or packages the audio track standalone into crystal clear **MP3 Audio** containers.
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item mb-3 border-0 shadow rounded-4">
+            <h2 class="accordion-header" id="faqHeadingFour">
+                <button class="accordion-button collapsed fw-bold text-dark rounded-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseFour" aria-expanded="false" aria-controls="faqCollapseFour">
+                    Do I need an account or registration to use this platform?
+                </button>
+            </h2>
+            <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#vellumFaqAccordion">
+                <div class="accordion-body text-dark large">
+                    No sign-up or profile credentials are required.
+                  You can use Vellum Media Analyzer website with just a URL from supported platforms.
+        
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="mb-4 text-center">
+            <a href="/" class="text-700-24 text-blue-400">
+                <img src="/Images/main.png" alt="Vellum Media Analyzer" class="inline" width="222" 
+                
+                height="150">
+            </a>
+            <p class="text-400-14 mt-2">©
+                2026</p>
+        </div>
+<div class="d-flex justify-content-center mx-auto my-5">
+<a  href="prv" >Privacy Policy.</a>
+</div>
+
+@code {
+ private string urlInput = "";
+    private bool isBusy = false;
+    private bool isDownloading = false;
+    
+    private string errorMessage = "";
+    private List<MediaSummary> downloadHistory = new();
+    private bool showDownloadModal = false;
+    private AnalyzeMediaResponse? preview; 
+    private bool showSuccess = false;
+    
+
+    private bool IsValidUrl => !string.IsNullOrWhiteSpace(urlInput) && 
+                              (urlInput.StartsWith("http://") || urlInput.StartsWith("https://"));
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHistory();
+    }
+
+    private async Task LoadHistory()
+    {
+        try 
+        {
+            var result = await MediaClient.GetMediaAsync();
+            downloadHistory = result.ToList();
+        }
+        catch (Exception ex) 
+        {
+            Console.WriteLine($"Could not load history: {ex.Message}");
+        }
+    }
+
+    private async Task AnalyzeUrl()
+    {
+        errorMessage = "";
+
+        if (!IsValidUrl) 
+        { 
+            errorMessage = "Please enter a valid URL starting with http:// or https://"; 
+            return; 
+        }
+
+       isBusy = true;
+        StateHasChanged();
+
+        try
+        {
+            preview = await MediaClient.AnalyzeUrlAsync(urlInput);
+            if (preview != null)
+            {
+                showDownloadModal = true;
+            }
+            else
+            {
+                errorMessage = "Could not find video info. Check the link!";
+            }
+        }
+       catch
+        {
+            errorMessage = "Server error.";
+        }
+        finally
+        {
+            isBusy = false;
+            StateHasChanged();
+        }
+    
+    }
+
+    private async Task Download(string type)
+    {
+        showDownloadModal = false;
+        isDownloading = true;
+         showSuccess = false; // Reset
+     
+        //StateHasChanged();
+  
+
+        var downloadUrl = $"http://localhost:5249/medias/download?url={Uri.EscapeDataString(urlInput)}&type={type}";
+        await JS.InvokeVoidAsync("location.assign", downloadUrl);
+
+    await Task.Delay(7000); 
+    showSuccess = true;
+    await InvokeAsync(StateHasChanged);
+        
+     await Task.Delay(3000);
+    isDownloading = false;
+    showSuccess = false;
+    await LoadHistory();
+    }
+
+private string MediaUrl { get; set; } = string.Empty;
+
+    // Handles clearing the field array
+    private void ClearInput()
+    {
+        urlInput = string.Empty;
+    }
+    // Missing method causing your CopyToClipboard error:
+    private async Task CopyToClipboard(string text)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        
+    }
+
+    private async Task ClearHistory()
+{
+    try 
+    {
+        await MediaClient.ClearHistoryAsync();
+        downloadHistory.Clear(); // Empty the local list so the UI updates
+        StateHasChanged();
+    }
+    catch 
+    {
+        errorMessage = "Failed to clear history.";
+    }
+}
+}

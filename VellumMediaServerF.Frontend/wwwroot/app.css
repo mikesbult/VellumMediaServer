@@ -1,0 +1,324 @@
+h1:focus {
+    outline: none;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid #e50000;
+}
+
+.validation-message {
+    color: #e50000;
+}
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
+
+.darker-border-checkbox.form-check-input {
+    border-color: #929292;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+
+    .mobile-app-frame { 
+    max-width: 500px; 
+    margin: auto; 
+    min-height: 100vh; 
+    background: #f8f9fa; 
+}
+.card { border-radius: 15px; }
+.btn-primary { border-radius: 10px; background: #5865F2; border: none; }
+.form-control { border-radius: 10px; }
+.list-group-item { background: white; transition: 0.3s; margin-bottom: 8px; }
+
+
+.btn-analyze {
+    background: #007bff !important;
+    border: none;
+    border-radius: 8px;
+    color: white !important;
+    font-weight: 600;
+    padding: 10px 25px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Keeps the button looking premium when hovered */
+.btn-analyze:hover:not(:disabled) {
+    background: #0056b3 !important;
+    transform: translateY(-1px);
+}
+
+/* This stops the button from turning into a white void while analyzing */
+.btn-analyze:disabled {
+    background: #6c757d !important; /* Elegant gray while loading */
+    color: #e0e0e0 !important;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* --- Vellum MediaSaver Premium Cyber-Dark Navbar Styles --- */
+
+.navbar {
+    /* Subtle premium backdrop blur if supported, over your solid black background */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-color: #000000 !important;
+}
+
+/* Brand Link Container Wrapper */
+.navbar-brand {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.5px;
+    transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.02); /* Tiny, premium zoom when hovering the logo area */
+}
+
+/* The Icon Container Box */
+.navbar-brand .bg-info {
+    background-color: #0dcaf0 !important; /* Sharp cyan */
+    box-shadow: 0 0 15px rgba(13, 202, 240, 0.4); /* Neon cyan ambient glow */
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover .bg-info {
+    box-shadow: 0 0 25px rgba(13, 202, 240, 0.7); /* Intensify glow on hover */
+    background-color: #0baccc !important; /* Slightly deeper tone */
+}
+
+/* Brand Text Adjustments */
+.navbar-brand span {
+    font-weight: 800;
+}
+
+.navbar-brand .text-white {
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand .text-info {
+    color: #0dcaf0 !important;
+    text-shadow: 0 0 10px rgba(13, 202, 240, 0.2); /* Soft text lighting */
+}
+
+/* Customizing the border underneath to look elegant instead of harsh */
+.border-secondary {
+    border-color: rgba(255, 255, 255, 0.1) !important; /* Clean premium dark border separator */
+}
+
+/* Optional utility rule to ensure Bootstrap Icons (bi) center perfectly inside your square */
+.navbar-brand .bi-cloud-arrow-down-fill {
+    display: inline-block;
+    line-height: 1;
+    transform: translateY(-1px); /* Micro adjustment for centering visually */
+}
+
+/* --- Vellum Step-by-Step Instructions Panel Styles --- */
+
+.guide-step-card {
+    border-radius: 15px !important; /* Perfect visual match with your app cards */
+    background: #ffffff;
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.3s ease;
+}
+
+.guide-step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Numbered Circle Badges floating at top center */
+.step-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #007bff; /* Accent default */
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.25);
+}
+
+/* Give the middle step badge your navbar text-info cyan palette for a design hook */
+.row .col-12:nth-child(2) .step-badge {
+    background: #0dcaf0 !important;
+    box-shadow: 0 4px 8px rgba(13, 202, 240, 0.3);
+}
+
+/* Give the last step badge your conversion green palette */
+.row .col-12:nth-child(3) .step-badge {
+    background: #198754 !important;
+    box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+}
+
+/* Styled backgrounds for the central icons */
+.step-icon-wrapper {
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa; /* Sleek structural grey */
+}
+
+.text-info-custom {
+    color: #0dcaf0 !important;
+}
+
+/* --- Vellum Premium FAQ Minimal Accordion Styles --- */
+
+.faq-section .accordion-item {
+    background-color: #ffffff;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+/* Ensure nice gaps between individual boxes instead of squished lines */
+.faq-section .accordion-item:hover {
+    transform: translateY(-2px);
+}
+
+.faq-section .accordion-button {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+    font-size: 0.95rem;
+    padding: 18px 24px;
+    box-shadow: none !important; /* Drops the default blue focus ring highlight */
+}
+
+/* Custom styling for when the accordion is opened */
+.faq-section .accordion-button:not(.collapsed) {
+    color: #007bff !important; /* Shifting heading color to thematic blue */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Stylized Chevron Indicator Color Rotation */
+.faq-section .accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23007bff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+    background-size: 1.1rem;
+    transition: transform 0.2s ease-in-out;
+}
+
+.faq-section .accordion-body {
+    background-color: #ffffff;
+    padding: 20px 24px;
+    line-height: 1.6;
+}
+
+/* Forces image boxes to look symmetrical regardless of original picture cuts */
+.image-container-frame {
+    height: 180px; /* Explicit matching bounding height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #fafafa; /* Light accent frame background */
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.image-container-frame img {
+    max-height: 100%;
+    width: auto;
+    object-fit: contain; /* Prevents image squishing */
+}
+
+/* Forces Bootstrap columns to extend cleanly even if content text length differs slightly */
+.row.align-items-stretch .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Custom formatting rules for exact copy rendering */
+.privacy-body p {
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+    color: #495057;
+}
+
+.privacy-body h2 {
+    margin-top: 1.5rem;
+    letter-spacing: -0.3px;
+}
+
+.custom-bullet-list li {
+    margin-bottom: 0.4rem;
+    line-height: 1.6;
+}
+
+/* --- Vellum Input Card Utilities --- */
+.analyzer-card {
+    background-color: #ffffff;
+}
+
+.brand-icon-box {
+    width: 32px;
+    height: 32px;
+    background-color: rgba(43, 197, 211, 0.1);
+}
+
+.custom-analyzer-input {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    color: #212529;
+    box-shadow: none !important;
+}
+
+/* Clear Button Accent */
+.btn-clear-action {
+    background-color: #f1f3f5 !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    transition: all 0.15s ease;
+}
+
+.btn-clear-action:hover {
+    background-color: #e9ecef !important;
+    color: #212529 !important;
+}
+
+/* Analyze Button Accent */
+.btn-analyze-action {
+    background-color: #2bc5d3 !important; /* Authentic color matched exactly from your layout tokens */
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    transition: background-color 0.15s ease;
+}
+
+.btn-analyze-action:hover {
+    background-color: #23a9b6 !important;
+}

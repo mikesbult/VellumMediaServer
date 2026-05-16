@@ -1,0 +1,147 @@
+﻿@*page "/library"
+@using VellumMediaServerF.Frontend.Models
+@inject MediaClient MediaClient
+@using VellumMediaServerF.Frontend.Clients
+@inject HttpClient Http 
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<PageTitle>My Vellum Library</PageTitle>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p>Debug: Found @allMedia.Count items in database.</p>
+        <h2>📚 My Media Library</h2>
+        
+        <div class="d-flex align-items-center">
+            <span class="me-2">Filter:</span>
+            <select @bind="selectedFilter" @bind:after="ApplyFilter" class="form-select w-auto">
+                <option value="All">All Categories</option>
+                @foreach (var cat in categories)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </select>
+
+            
+        </div>
+    </div>
+
+    @if (filteredMedia == null)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p>Loading your collection...</p>
+        </div>
+    }
+    else if (!filteredMedia.Any())
+    {
+        <div class="alert alert-info">Nothing saved yet! Go to the 
+            home page to add some media.</div>
+    }
+    else
+    {
+       <div class="row g-4">
+    @foreach (var item in filteredMedia)
+    {
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                
+                @if (activeVideoUrl == item.ThumbnailUrl) // or item.Url if you have it
+                {
+                    <video src="@item.ThumbnailUrl" controls autoplay class="card-img-top"></video>
+                }
+                else
+                {
+                    <img src="@item.ThumbnailUrl" 
+                         class="card-img-top pointer" 
+                         alt="Thumbnail" 
+                         @onclick="() => PlayVideo(item.ThumbnailUrl)" />
+                }
+                
+                <div class="card-body">
+                    <span class="badge bg-secondary mb-2">@item.Category</span>
+                    <h6 class="card-title text-truncate">@item.Title</h6>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 d-flex justify-content-between">
+                    <button class="btn btn-sm btn-outline-primary" @onclick="() => 
+                        PlayVideo(item.ThumbnailUrl)">
+                        Play
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" @onclick="() => 
+                        DeleteMedia(item.Id)">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+    }
+</div>
+
+@code {
+   private List<MediaSummary> allMedia = new();
+    private List<MediaSummary> filteredMedia = new();
+    private List<string> categories = new();
+    private string selectedFilter = "All";
+//private List<MediaSummary> filteredMedia = new();
+private string? activeVideoUrl;
+
+private void PlayVideo(string url)
+{
+    activeVideoUrl = url;
+    StateHasChanged();
+}
+    
+    protected override async Task OnInitializedAsync()
+{
+    try 
+    {
+        var result = await MediaClient.GetMediaAsync();
+        if (result != null)
+        {
+            allMedia = result.ToList();
+            filteredMedia = allMedia; // This fills the grid
+            
+            categories = allMedia
+                .Select(m => m.Category)
+                .Where(c => !string.IsNullOrEmpty(c))
+                .Distinct()
+                .ToList();
+            
+            StateHasChanged(); // Force the UI to refresh with the new data
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error loading library: {ex.Message}");
+    }
+}
+
+    
+
+    private void ApplyFilter()
+    {
+        if (selectedFilter == "All")
+        {
+            filteredMedia = allMedia;
+        }
+        else
+        {
+            filteredMedia = allMedia.Where(m => m.Category == selectedFilter).ToList();
+        }
+    }
+
+    private async Task DeleteMedia(Guid id)
+    {
+        // 4. Call your delete endpoint
+        await MediaClient.DeleteMediaAsync(id);
+        
+        // 5. Update the local list so the item vanishes instantly from the screen
+        allMedia.RemoveAll(m => m.Id == id);
+        ApplyFilter(); 
+    }
+
+}*@
