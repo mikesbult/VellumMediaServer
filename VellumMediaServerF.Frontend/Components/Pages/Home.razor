@@ -9,12 +9,23 @@
 
 <PageTitle>Vellum Media Library</PageTitle>
 
+<div class="alert text-dark fw-bold shadow alert-info text-center mx-auto my-5 mb-4" 
+style="max-width: 600px; font-size: 0.9rem;">
+    <strong>🚀 Supported Platforms:</strong> TikTok, Instagram, Facebook, Reddit, Twitch, & SoundCloud. 
+    <br><span class="text-dark">(YouTube links may not work due to platform restrictions. 👀)</span>
+     
+</div>
+
+<p class="text-center text-dark fw-bold mb-4" style="font-size: 1.05rem; letter-spacing: -0.01em;">
+    Paste a link from any supported platform below to download instantly.
+</p>
 
 <div class="container mobile-app-frame p-3 my-5">
     <div class="card shadow mb-4 border-0">
         <div class="card-body">
             <h5 class="text-center  text-primary fw-bold mb-3">Vellum Media Saver(VMS)</h5>
            <div class="input-group">
+       
         
        
         <input class="form-control @(!IsValidUrl && !string.IsNullOrEmpty(urlInput) ? "is-invalid" : "")" 
@@ -284,8 +295,14 @@
         </div>
 <div class="d-flex justify-content-center mx-auto my-5">
 <a  href="prv" >Privacy Policy.</a>
+
+
 </div>
 
+<div class="d-flex justify-content-center mx-auto my-5">
+    <span class="badge bg-success">Beta</span>
+
+</div>
 
 
 @code {
