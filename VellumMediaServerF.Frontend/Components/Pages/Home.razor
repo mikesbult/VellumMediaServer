@@ -72,7 +72,7 @@
         </div>
     }
 
-  <div class="history-section mt-4">
+  @*<div class="history-section mt-4">
     <div class="d-flex justify-content-between align-items-center mb-2 " data-bs-toggle="tooltip"
              data-bs-placement="top" title="Downloads History">
         <h6 class="mb-0 ">Recent Downloads</h6>
@@ -90,7 +90,7 @@
     <div class="list-group">
         @foreach (var item in downloadHistory.OrderByDescending(x => x.SavedAt).Take(5))
         {
-            @* --- REPLACE YOUR OLD DIV WITH THIS ONE --- *@
+            @* --- REPLACE YOUR OLD DIV WITH THIS ONE --- 
             <div class="list-group-item d-flex align-items-center rounded mb-2 border-0 shadow-sm">
                 @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
                 {
@@ -108,7 +108,7 @@
             </div>
         }
     </div>
-</div>
+</div>*@
 </div>
 
 
@@ -294,7 +294,7 @@
     private bool isDownloading = false;
     
     private string errorMessage = "";
-    private List<MediaSummary> downloadHistory = new();
+    //private List<MediaSummary> downloadHistory = new();
     private bool showDownloadModal = false;
     private AnalyzeMediaResponse? preview; 
     private bool showSuccess = false;
@@ -304,12 +304,12 @@
                               (urlInput.StartsWith("http://") || urlInput.StartsWith("https://"));
 
 
-    protected override async Task OnInitializedAsync()
+   /* protected override async Task OnInitializedAsync()
     {
         await LoadHistory();
-    }
+    }*/
 
-    private async Task LoadHistory()
+   @*private async Task LoadHistory()
     {
         try 
         {
@@ -320,7 +320,7 @@
         {
             Console.WriteLine($"Could not load history: {ex.Message}");
         }
-    }
+    }*@
 
     private async Task AnalyzeUrl()
     {
@@ -381,7 +381,7 @@ await JS.InvokeVoidAsync("location.assign", downloadUrl);
      await Task.Delay(3000);
     isDownloading = false;
     showSuccess = false;
-    await LoadHistory();
+    //await LoadHistory();
     }
 
 private string MediaUrl { get; set; } = string.Empty;
@@ -398,7 +398,7 @@ private string MediaUrl { get; set; } = string.Empty;
         
     }
 
-    private async Task ClearHistory()
+   @* private async Task ClearHistory()
 {
     try 
     {
@@ -410,5 +410,5 @@ private string MediaUrl { get; set; } = string.Empty;
     {
         errorMessage = "Failed to clear history.";
     }
-}
+}*@
 }
