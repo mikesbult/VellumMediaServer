@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Optional: link your sitemap if you generate one later
+# Sitemap: https://vellummediaserver.onrender.com/sitemap.xml
