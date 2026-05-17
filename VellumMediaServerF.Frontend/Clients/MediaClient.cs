@@ -49,5 +49,7 @@ public string BuildDownloadUrl(string url, string type)
     return new Uri(httpClient.BaseAddress, $"medias/download?url={encodedUrl}&type={type}").ToString();
 }
 
+
+
 }
 

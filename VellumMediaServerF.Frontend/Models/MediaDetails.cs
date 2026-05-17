@@ -10,11 +10,15 @@ namespace VellumMediaServerF.Frontend.Models;
      [StringLength(100, ErrorMessage = "The Title must be less than 100 characters!")]
     public required string Title {get; set;}
 
-    //public string Description {get; set;} = "";
+  //  public string Description {get; set;} = "";
 
-    //public  required string Category {get; set;} 
+   // public  required string Category {get; set;} 
 
      public   string SourceUrl {get; set;} = "";
+
+    // public   string FileUrl {get; set;} = "";
+
+    // public   string MediaType {get; set;} = "";
 
       public   string? ThumbnailUrl {get; set;} 
 

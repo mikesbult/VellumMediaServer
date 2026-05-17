@@ -1,0 +1,138 @@
+﻿@*page "/vault"
+@using VellumMediaServerF.Frontend.Models
+@using VellumMediaServerF.Frontend.Clients
+@inject MediaClient MediaClient
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<div class="vault-container p-4 min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4 header-row">
+        <div>
+            <h1 class="display-6 fw-bold text-light mb-1">Your Cloud Vault</h1>
+            <p class="text-light">Browse and play your globally archived media collections</p>
+        </div>
+        <button class="btn btn-primary px-4 py-2" @onclick="@(() => Nav.NavigateTo("/"))">
+            <i class="bi bi-plus-lg me-2"></i> Analyze New Link
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="d-flex flex-column justify-content-center align-items-center loader-space">
+            <div class="spinner-border text-primary evaluation-spinner" role="status"></div>
+            <p class="text-muted mt-3 fs-5">Retrieving cloud records from SQLite database...</p>
+        </div>
+    }
+    else if (!vaultItems.Any())
+    {
+        <div class="text-center no-records-box p-5 border rounded-4 animate-fade-in">
+            <i class="bi bi-folder-x display-1 text-muted"></i>
+            <h3 class="mt-3 fw-bold text-white">Your Vault is Empty</h3>
+            <p class="text-muted mb-4">You haven't preserved any media links to your website storage layout yet.</p>
+            <button class="btn btn-outline-light px-4" @onclick="@(() => Nav.NavigateTo("/"))">Get Started</button>
+        </div>
+    }
+    else
+    {
+        <!-- Responsive Media Masonry Card Grid -->
+        <div class="row g-4 animate-fade-in">
+            @foreach (var item in vaultItems)
+            {
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="glass-media-card shadow-lg border overflow-hidden position-relative">
+                        
+                        <div class="media-display-zone bg-black position-relative">
+                            @if (item.MediaType?.ToLower() == "video")
+                            {
+                                <video controls class="w-100 h-100 card-media" poster="@item.ThumbnailUrl">
+                                    <source src="@item.FileUrl" type="video/mp4" />
+                                </video>
+                                <span class="badge bg-danger type-badge"><i class="bi bi-play-btn-fill me-1"></i> Video</span>
+                            }
+                            else
+                            {
+                                <img src="@item.FileUrl" class="w-100 h-100 card-media" alt="@item.Title" @onclick="() => ToggleLightbox(item.FileUrl)" />
+                                <span class="badge bg-info type-badge text-dark"><i class="bi bi-image me-1"></i> Image</span>
+                            }
+                        </div>
+
+                        <div class="card-metadata-info p-3">
+                            <span class="badge bg-secondary mb-2 category-pill">@item.Category</span>
+                            <h5 class="text-white text-truncate fw-bold mb-1">@item.Title</h5>
+                            <p class="text-muted text-clamp fs-7 mb-2">@item.Description</p>
+                            <small class="text-muted d-block fs-8"><i class="bi bi-calendar3 me-1"></i> @item.SavedAt.ToLocalTime().ToString("MMM dd, yyyy")</small>
+                        </div>
+
+                        <button class="btn btn-danger btn-sm remove-vault-btn position-absolute m-2" @onclick="() => DeleteVaultRecord(item.Id)">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (isLightboxOpen)
+{
+    <div class="lightbox-overlay-layer animate-fade-in" @onclick="() => ToggleLightbox(null)">
+        <div class="lightbox-content-box" @onclick:stopPropagation="true">
+            <img src="@activeLightboxUrl" class="img-fluid rounded shadow-lg" alt="Full screen preview" />
+            <button class="btn-close close-lightbox-trigger" @onclick="() => ToggleLightbox(null)"></button>
+        </div>
+    </div>
+}
+
+
+
+@code {
+    // FIX 1: Change the list type from MediaDetails to MediaSummary
+    private List<MediaSummary> vaultItems = new();
+    private bool isLoading = true;
+    private bool isLightboxOpen = false;
+    private string? activeLightboxUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // The compiler now successfully maps the incoming collection type
+            var items = await MediaClient.GetMediaAsync();
+            if (items != null)
+            {
+                vaultItems = items.OrderByDescending(x => x.SavedAt).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Telemetry pull failure: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task DeleteVaultRecord(Guid id)
+    {
+        try
+        {
+            // FIX 2: Call the method directly without assigning its output to a variable
+            await MediaClient.DeleteMediaAsync(id);
+            
+            // Remove the item directly from the local UI cache list
+            vaultItems.RemoveAll(x => x.Id == id);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Database synchronization drop failure: {ex.Message}");
+        }
+    }
+
+    private void ToggleLightbox(string? url)
+    {
+        activeLightboxUrl = url;
+        isLightboxOpen = !string.IsNullOrEmpty(url);
+    }
+}*@
