@@ -33,12 +33,12 @@ style="max-width: 600px; font-size: 0.9rem;">
                    placeholder="Paste link here..." />
 
             <div class="d-flex gap-2 w-100">
-                <button type="button" class="btn btn-outline-danger shadow flex-grow-1 py-2 fw-semibold d-flex align-items-center justify-content-center" 
+                <button type="button" class="btn btn-outline-danger shadow  ms-2 d-flex align-items-center justify-content-center" 
                         data-bs-toggle="tooltip" data-bs-placement="top" title="Clear pasted link" @onclick="ClearInput">
                     <i class="bi bi-trash3 me-1"></i> Clear
                 </button>
                        
-                <button class="btn btn-analyze shadow flex-grow-1 py-2 fw-semibold" @onclick="AnalyzeUrl" disabled="@(isBusy || !IsValidUrl)">
+                <button class="btn btn-analyze shadow py-2 fw-semibold" @onclick="AnalyzeUrl" disabled="@(isBusy || !IsValidUrl)">
                     @(isBusy ? "..." : "Analyze")
                 </button>
             </div>

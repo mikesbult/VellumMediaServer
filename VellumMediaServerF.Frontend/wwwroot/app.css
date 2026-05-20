@@ -38,14 +38,24 @@ h1:focus {
 }
 
 
-    .mobile-app-frame { 
+   /* 📱 Base styling for mobile phones */
+.mobile-app-frame { 
     width: 100%;
-    max-width: 500px; 
+    max-width: 100%; /* Stretch nicely on mobile */
     margin: 0 auto; 
     padding: 15px;
     background: #f8f9fa; 
-    box-sizing: border-box; /* Crucial structural component padding guard */
+    box-sizing: border-box;
 }
+
+/* 💻 Upgraded styling just for Desktop Screens (Screens wider than 768px) */
+@media (min-width: 768px) {
+    .mobile-app-frame {
+        max-width: 800px; /* Expands beautifully on your computer screen! */
+        padding: 30px;
+    }
+}
+
 .card { border-radius: 15px; }
 .btn-primary { border-radius: 10px; background: #5865F2; border: none; }
 .form-control { border-radius: 10px; }
