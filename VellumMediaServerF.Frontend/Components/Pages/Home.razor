@@ -53,14 +53,24 @@ style="max-width: 600px; font-size: 0.9rem;">
         </button>
     </div>
 
-    <div class="d-flex gap-2">
-        <button class="btn btn-outline-danger" @onclick="() => { urlInput = string.Empty; }">
-            Clear
-        </button>
-        <button class="btn btn-secondary" @onclick="AnalyzeUrl" disabled="@isBusy">
-            Analyze
-        </button>
-    </div>
+<div class="d-flex gap-2 mt-3">
+    <button class="btn btn-outline-danger" @onclick="() => { urlInput = string.Empty; }" disabled="@isBusy">
+        Clear
+    </button>
+    
+    <button class="btn btn-secondary d-flex align-items-center gap-2" @onclick="AnalyzeUrl" disabled="@isBusy">
+        @if (isBusy)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Analyzing...</span>
+        }
+        else
+        {
+            <span>Analyze</span>
+        }
+    </button>
+</div>
+
 </div>
         </div>
 
