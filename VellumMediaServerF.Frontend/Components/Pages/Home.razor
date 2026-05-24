@@ -7,6 +7,7 @@
 @inject CategorysClient CategorysClient
 @inject IJSRuntime JS
 
+
 <PageTitle>Vellum Media Library</PageTitle>
 
 <div class="alert text-dark fw-bold shadow alert-info text-center mx-auto my-5 mb-4" 
@@ -22,33 +23,45 @@ style="max-width: 600px; font-size: 0.9rem;">
 
 <div class="container mobile-app-frame p-3 my-5">
    <div class="card shadow mb-4 border-0">
-    <div class="card-body p-3 p-sm-4">
-        <h5 class="text-center text-primary fw-bold mb-3">Vellum Media Saver(VMS)</h5>
+    <div class="card shadow p-4">
+    <h5 class="text-center text-primary fw-bold mb-3">Vellum Media Saver (VMS)</h5>
+
+    <div class="position-relative d-flex align-items-center mb-3 shadow">
+        <input type="text" 
+               @bind="urlInput" 
+               class="form-control pe-5" 
+               placeholder="Paste link here..." 
+               style="height: 48px; border-radius: 8px;" />
         
-        <div class="d-flex flex-column gap-2">
-            
-            <input class="form-control py-2 @(!IsValidUrl && !string.IsNullOrEmpty(urlInput) ? "is-invalid" : "")" 
-                   @bind="urlInput" 
-                   @bind:event="oninput" 
-                   placeholder="Paste link here..." />
+        <button type="button" 
+                @onclick="PasteFromClipboard"
+                class="btn position-absolute end-0 me-2 d-flex align-items-center 
+                gap-1 text-primary border-0"
+                style="background: #e8f0fe; border-radius: 6px; 
+                padding: 4px 12px; font-size: 14px; font-weight: 500;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14"
+             height="14" fill="currentColor"
+              class="bi bi-clipboard" viewBox="0 0 16 16">
+                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 
+                2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1
+                 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5
+                 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 
+                 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+            </svg>
+            Paste
+        </button>
+    </div>
 
-            <div class="d-flex gap-2 w-100">
-                <button type="button" class="btn btn-outline-danger shadow  ms-2 d-flex align-items-center justify-content-center" 
-                        data-bs-toggle="tooltip" data-bs-placement="top" title="Clear pasted link" @onclick="ClearInput">
-                    <i class="bi bi-trash3 me-1"></i> Clear
-                </button>
-                       
-                <button class="btn btn-analyze shadow py-2 fw-semibold" @onclick="AnalyzeUrl" disabled="@(isBusy || !IsValidUrl)">
-                    @(isBusy ? "..." : "Analyze")
-                </button>
-            </div>
-        </div>
-
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="text-danger small mt-2 text-center">@errorMessage</div>
-        }
-            </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-danger" @onclick="() => { urlInput = string.Empty; }">
+            Clear
+        </button>
+        <button class="btn btn-secondary" @onclick="AnalyzeUrl" disabled="@isBusy">
+            Analyze
+        </button>
+    </div>
+</div>
         </div>
 
 
@@ -410,4 +423,23 @@ private string MediaUrl { get; set; } = string.Empty;
         errorMessage = "Failed to clear history.";
     }
 }*@
+
+private async Task PasteFromClipboard()
+{
+    try
+    {
+        // Call our JS function to get clipboard data safely
+        var text = await JS.InvokeAsync<string>("clipboardExtensions.readText");
+        
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            urlInput = text;
+            StateHasChanged(); // Force the UI input to update visually
+        }
+    }
+    catch (Exception)
+    {
+        errorMessage = "Clipboard access was denied by your browser.";
+    }
+}
 }

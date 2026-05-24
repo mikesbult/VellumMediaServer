@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    <meta http-equiv="refresh" content="60">
     <ResourcePreloader />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["VellumMediaServerF.Frontend.styles.css"]" />
@@ -81,6 +82,19 @@
 
     tooltips.forEach(t => {
         new bootstrap.Tooltip(t);
+</script>
+
+<script>
+    window.clipboardExtensions = {
+        readText: async function () {
+            try {
+                return await navigator.clipboard.readText();
+            } catch (err) {
+                console.error("Failed to read clipboard: ", err);
+                return "";
+            }
+        }
+    };
 </script>
 </body>
 
