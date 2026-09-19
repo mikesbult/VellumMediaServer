@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @inject MediaClient MediaClient
 @rendermode InteractiveServer
 @using VellumMediaServerF.Frontend.Models
@@ -11,6 +11,46 @@
 <PageTitle>Vellum Media Library</PageTitle>
 
 <style>
+    /* ---------- Marquee ---------- */
+    .marquee-container {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        max-width: 950px;
+        margin: 0 auto;
+        background: #0b1220;
+        border-radius: 16px;
+        padding: 14px 0;
+    }
+
+    .marquee-track {
+        display: flex;
+        width: max-content;
+        animation: marquee-scroll 28s linear infinite;
+    }
+
+    .marquee-content {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .marquee-content i {
+        color: #7dd3fc;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .marquee-content i:hover {
+        color: #ffffff;
+        transform: scale(1.15);
+    }
+
+    @@keyframes marquee-scroll {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    /* ---------- Modal & existing styles ---------- */
     .vms-modal-backdrop {
         background: rgba(8, 12, 20, 0.65);
         backdrop-filter: blur(3px);
@@ -22,11 +62,7 @@
         overflow: hidden;
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
         position: relative;
-        pointer-events: auto; /* Bootstrap's .modal-dialog sets pointer-events: none;
-                                  .modal-content normally restores it — since we swapped
-                                  that class out, we need to restore it here too, or the
-                                  whole card (buttons included) is visually present but
-                                  completely unclickable. */
+        pointer-events: auto;
         animation: vms-modal-in 0.25s ease-out;
     }
 
@@ -53,9 +89,7 @@
         transition: background 0.15s ease;
     }
 
-    .vms-modal-close:hover {
-        background: rgba(0, 0, 0, 0.65);
-    }
+    .vms-modal-close:hover { background: rgba(0, 0, 0, 0.65); }
 
     .vms-thumb-wrap {
         position: relative;
@@ -65,9 +99,7 @@
         overflow: hidden;
     }
 
-    .vms-thumb-wrap-small {
-        aspect-ratio: 21 / 9;
-    }
+    .vms-thumb-wrap-small { aspect-ratio: 21 / 9; }
 
     .vms-thumb-img {
         width: 100%;
@@ -121,9 +153,7 @@
         border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
-    .vms-modal-body {
-        padding: 20px 24px 24px;
-    }
+    .vms-modal-body { padding: 20px 24px 24px; }
 
     .vms-modal-eyebrow {
         margin: 0 0 4px;
@@ -158,9 +188,7 @@
         transition: transform 0.12s ease, box-shadow 0.12s ease;
     }
 
-    .vms-download-btn:hover {
-        transform: translateY(-1px);
-    }
+    .vms-download-btn:hover { transform: translateY(-1px); }
 
     .vms-download-btn-video {
         background: linear-gradient(135deg, #22c55e, #16a34a);
@@ -195,20 +223,11 @@
         border-radius: 50%;
     }
 
-    .vms-spin-ring i {
-        position: relative;
-        z-index: 1;
-    }
+    .vms-spin-ring i { position: relative; z-index: 1; }
 
-    @@keyframes vms-spin {
-        to { transform: rotate(360deg); }
-    }
+    @@keyframes vms-spin { to { transform: rotate(360deg); } }
 
-    .vms-progress-caption {
-        font-size: 13px;
-        color: #667085;
-        margin-bottom: 0;
-    }
+    .vms-progress-caption { font-size: 13px; color: #667085; margin-bottom: 0; }
 
     .vms-progress-track {
         width: 100%;
@@ -247,17 +266,36 @@
     }
 
     @@keyframes vms-pop {
-        0% { transform: scale(0.5); opacity: 0; }
-        70% { transform: scale(1.08); opacity: 1; }
+        0%   { transform: scale(0.5); opacity: 0; }
+        70%  { transform: scale(1.08); opacity: 1; }
         100% { transform: scale(1); }
     }
 </style>
 
-<div class="alert text-dark fw-bold shadow alert-info text-center mx-auto my-5 mb-4" 
-style="max-width: 600px; font-size: 0.9rem;">
-    <strong>🚀 Supported Platforms:</strong> TikTok, Instagram, Facebook, Reddit, Twitch, & SoundCloud. 
-    <br><span class="text-dark">(YouTube links may not work due to platform restrictions. 👀)</span>
-     
+<!-- 🎬 Platform Marquee -->
+<div class="marquee-container shadow my-4">
+    <div class="marquee-track">
+        <div class="marquee-content fs-1">
+            <i class="bi bi-tiktok mx-4" title="TikTok"></i>
+            <i class="bi bi-instagram mx-4" title="Instagram"></i>
+            <i class="bi bi-facebook mx-4" title="Facebook"></i>
+            <i class="bi bi-reddit mx-4" title="Reddit"></i>
+            <i class="bi bi-twitch mx-4" title="Twitch"></i>
+            <i class="bi bi-soundwave mx-4" title="SoundCloud"></i>
+            <i class="bi bi-pinterest mx-4" title="Pinterest"></i>
+            <i class="bi bi-youtube mx-4" title="YouTube (may not work yet)"></i>
+        </div>
+        <div class="marquee-content fs-1" aria-hidden="true">
+            <i class="bi bi-tiktok mx-4" title="TikTok"></i>
+            <i class="bi bi-instagram mx-4" title="Instagram"></i>
+            <i class="bi bi-facebook mx-4" title="Facebook"></i>
+            <i class="bi bi-reddit mx-4" title="Reddit"></i>
+            <i class="bi bi-twitch mx-4" title="Twitch"></i>
+            <i class="bi bi-soundwave mx-4" title="SoundCloud"></i>
+            <i class="bi bi-pinterest mx-4" title="Pinterest"></i>
+            <i class="bi bi-youtube mx-4" title="YouTube (may not work yet)"></i>
+        </div>
+    </div>
 </div>
 
 <p class="text-center text-dark fw-bold mb-4" style="font-size: 1.05rem; letter-spacing: -0.01em;">
@@ -265,58 +303,49 @@ style="max-width: 600px; font-size: 0.9rem;">
 </p>
 
 <div class="container mobile-app-frame p-3 my-5">
-   <div class="card shadow mb-4 border-0">
-    <div class="card shadow p-4">
-    <h5 class="text-center text-primary fw-bold mb-3">Vellum Media Saver (VMS)</h5>
+    <div class="card shadow mb-4 border-0">
+        <div class="card shadow p-4">
+            <h5 class="text-center text-primary fw-bold mb-3">Vellum Media Saver (VMS)</h5>
 
-    <div class="position-relative d-flex align-items-center mb-3 shadow">
-        <input type="text" 
-               @bind="urlInput" 
-               class="form-control pe-5" 
-               placeholder="Paste link here..." 
-               style="height: 48px; border-radius: 8px;" />
-        
-        <button type="button" 
-                @onclick="PasteFromClipboard"
-                class="btn position-absolute end-0 me-2 d-flex align-items-center 
-                gap-1 text-primary border-0"
-                style="background: #e8f0fe; border-radius: 6px; 
-                padding: 4px 12px; font-size: 14px; font-weight: 500;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14"
-             height="14" fill="currentColor"
-              class="bi bi-clipboard" viewBox="0 0 16 16">
-                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 
-                2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1
-                 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
-                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5
-                 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 
-                 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
-            </svg>
-            Paste
-        </button>
-    </div>
+            <div class="position-relative d-flex align-items-center mb-3 shadow">
+                <input type="text"
+                       @bind="urlInput"
+                       class="form-control pe-5"
+                       placeholder="Paste link here..."
+                       style="height: 48px; border-radius: 8px;" />
 
-<div class="d-flex gap-2 mt-3">
-    <button class="btn btn-outline-danger" @onclick="() => { urlInput = string.Empty; }" disabled="@isBusy">
-        Clear
-    </button>
-    
-    <button class="btn btn-secondary d-flex align-items-center gap-2" @onclick="AnalyzeUrl" disabled="@isBusy">
-        @if (isBusy)
-        {
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            <span>Analyzing...</span>
-        }
-        else
-        {
-            <span>Analyze</span>
-        }
-    </button>
-</div>
+                <button type="button"
+                        @onclick="PasteFromClipboard"
+                        class="btn position-absolute end-0 me-2 d-flex align-items-center gap-1 text-primary border-0"
+                        style="background: #e8f0fe; border-radius: 6px; padding: 4px 12px; font-size: 14px; font-weight: 500;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                         class="bi bi-clipboard" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+                    </svg>
+                    Paste
+                </button>
+            </div>
 
-</div>
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-outline-danger" @onclick="() => { urlInput = string.Empty; }" disabled="@isBusy">
+                    Clear
+                </button>
+
+                <button class="btn btn-secondary d-flex align-items-center gap-2" @onclick="AnalyzeUrl" disabled="@isBusy">
+                    @if (isBusy)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span>Analyzing...</span>
+                    }
+                    else
+                    {
+                        <span>Analyze</span>
+                    }
+                </button>
+            </div>
         </div>
-
+    </div>
 
     @if (!string.IsNullOrEmpty(errorMessage))
     {
@@ -325,47 +354,7 @@ style="max-width: 600px; font-size: 0.9rem;">
             <button type="button" class="btn-close" @onclick='() => errorMessage = ""'></button>
         </div>
     }
-
-  @*<div class="history-section mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-2 " data-bs-toggle="tooltip"
-             data-bs-placement="top" title="Downloads History">
-        <h6 class="mb-0 ">Recent Downloads</h6>
-        
-        @if (downloadHistory.Any())
-        {
-            <button class="btn btn-sm btn-link text-danger p-0 text-decoration-none" data-bs-toggle="tooltip"
-             data-bs-placement="top" title="Clear History"@onclick=
-            "ClearHistory">
-                Clear History
-            </button>
-        }
-    </div>
-    
-    <div class="list-group">
-        @foreach (var item in downloadHistory.OrderByDescending(x => x.SavedAt).Take(5))
-        {
-            @* --- REPLACE YOUR OLD DIV WITH THIS ONE --- 
-            <div class="list-group-item d-flex align-items-center rounded mb-2 border-0 shadow-sm">
-                @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
-                {
-                    <img src="@item.ThumbnailUrl" class="rounded me-3" style="width: 80px; height: 45px; object-fit: cover;" />
-                }
-                <div class="flex-grow-1 text-truncate">
-                    <small class="text-muted d-block">@item.SavedAt.ToLocalTime().ToString("g")</small>
-                    <span class="text-dark">@item.Title</span>
-                </div>
-                <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="tooltip" 
-                data-bs-placement="top" title="Copy To Clipboard"@onclick='() => 
-                    CopyToClipboard(item.Title)'>
-                    <i class="bi bi-copy"></i>
-                </button>
-            </div>
-        }
-    </div>
-</div>*@
 </div>
-
-
 
 @if ((showDownloadModal || isDownloading) && preview != null)
 {
@@ -470,7 +459,7 @@ style="max-width: 600px; font-size: 0.9rem;">
         <div class="col-12 col-md-4">
             <div class="card h-80 border-0 shadow p-4 text-center guide-step-card position-relative">
                 <div class="step-badge">1</div>
-                
+
                 <div class="image-container-frame">
                     <img src="Images/logo1.png" alt="logo1" class="img-fluid rounded-3" />
                 </div>
@@ -488,7 +477,7 @@ style="max-width: 600px; font-size: 0.9rem;">
         <div class="col-12 col-md-4">
             <div class="card h-80 border-0 shadow p-4 text-center guide-step-card position-relative">
                 <div class="step-badge">2</div>
-                
+
                 <div class="image-container-frame">
                     <img src="Images/logo2.png" alt="logo2" class="img-fluid rounded-3" />
                 </div>
@@ -506,7 +495,7 @@ style="max-width: 600px; font-size: 0.9rem;">
         <div class="col-12 col-md-4">
             <div class="card h-80 border-0 shadow p-4 text-center guide-step-card position-relative">
                 <div class="step-badge">3</div>
-                
+
                 <div class="image-container-frame">
                     <img src="images/logo3.png" alt="logo3" class="img-fluid rounded-3" />
                 </div>
@@ -516,8 +505,8 @@ style="max-width: 600px; font-size: 0.9rem;">
                 </div>
                 <h5 class="fw-bold fs-6 text-dark mt-2">Vellum Data Insight</h5>
                 <p class="text-muted small mb-0 mt-2">
-                    After rapid metadata extraction processing, 
-                    evaluate detailed video statistics and pick your preferred MP4 or 
+                    After rapid metadata extraction processing,
+                    evaluate detailed video statistics and pick your preferred MP4 or
                     high-fidelity audio download stream options.
                 </p>
             </div>
@@ -525,25 +514,24 @@ style="max-width: 600px; font-size: 0.9rem;">
     </div>
 </div>
 
-
 <div class="container-fluid my-5 faq-section mx-auto">
     <div class="text-center mb-4">
         <h3 class="fw-bold text-dark">Frequently Asked Questions</h3>
     </div>
 
     <div class="accordion justify-content-center mx-auto" id="vellumFaqAccordion" style="max-width: 950px;">
-        
+
         <div class="accordion-item mb-3 border-0 shadow rounded-4">
             <h2 class="accordion-header" id="faqHeadingOne">
-                <button class="accordion-button collapsed fw-bold text-dark rounded-4 " type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="false" aria-controls="faqCollapseOne">
+                <button class="accordion-button collapsed fw-bold text-dark rounded-4" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="false" aria-controls="faqCollapseOne">
                     Is it possible to download videos from private accounts?
                 </button>
             </h2>
             <div id="faqCollapseOne" class="accordion-collapse collapse" aria-labelledby="faqHeadingOne" data-bs-parent="#vellumFaqAccordion">
-                <div class="accordion-body text-dark large ">
-                    Vellum Media Saver does not allow you to scrape or 
-                    parse media from private profiles or locked accounts. 
-                    Please ensure you are copying links from public posts 
+                <div class="accordion-body text-dark large">
+                    Vellum Media Saver does not allow you to scrape or
+                    parse media from private profiles or locked accounts.
+                    Please ensure you are copying links from public posts
                     and that you are not infringing on copyright or content creator guidelines.
                 </div>
             </div>
@@ -570,8 +558,8 @@ style="max-width: 600px; font-size: 0.9rem;">
             </h2>
             <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#vellumFaqAccordion">
                 <div class="accordion-body text-dark large">
-                    Currently, the engine extracts the highest available 
-                    presentation streams directly into standard **MP4 Video** 
+                    Currently, the engine extracts the highest available
+                    presentation streams directly into standard **MP4 Video**
                     formats or packages the audio track standalone into crystal clear **MP3 Audio** containers.
                 </div>
             </div>
@@ -586,8 +574,7 @@ style="max-width: 600px; font-size: 0.9rem;">
             <div id="faqCollapseFour" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#vellumFaqAccordion">
                 <div class="accordion-body text-dark large">
                     No sign-up or profile credentials are required.
-                  You can use Vellum Media Saver website with just a URL from supported platforms.
-        
+                    You can use Vellum Media Saver website with just a URL from supported platforms.
                 </div>
             </div>
         </div>
@@ -596,25 +583,20 @@ style="max-width: 600px; font-size: 0.9rem;">
 </div>
 
 <div class="mb-4 text-center">
-            <a href="/" class="text-700-24 text-blue-400">
-                <img src="/Images/logo4.png" alt="Vellum Media Saver" class="inline" width="222" 
-                
-                height="150">
-            </a>
-            <p class="text-400-14 mt-2">©
-                2026</p>
-        </div>
+    <a href="/" class="text-700-24 text-blue-400">
+        <img src="/Images/logo4.png" alt="Vellum Media Saver" class="inline" width="222" height="150">
+    </a>
+    <p class="text-400-14 mt-2">© 2026</p>
+</div>
+
 <div class="d-flex justify-content-center mx-auto my-5">
-<a  href="prv" >Privacy Policy.</a>
-
-
+    <a href="prv">Privacy Policy.</a>
 </div>
 
 <footer class="dsq-footer my-5">
     <div class="container text-center py-3">
-        <span class="text-white">Check  out ➡️➡️</span>
-        <a href="https://directservicequester-dsq.onrender.com/" 
-        target="_blank" class="footer-link">
+        <span class="text-white">Check out ➡️➡️</span>
+        <a href="https://directservicequester-dsq.onrender.com/" target="_blank" class="footer-link">
             Direct Service Quester (DSQ)
         </a>
     </div>
@@ -622,50 +604,29 @@ style="max-width: 600px; font-size: 0.9rem;">
 
 
 @code {
- private string urlInput = "";
+    private string urlInput = "";
     private bool isBusy = false;
     private bool isDownloading = false;
-    
+
     private string errorMessage = "";
-    //private List<MediaSummary> downloadHistory = new();
     private bool showDownloadModal = false;
-    private AnalyzeMediaResponse? preview; 
+    private AnalyzeMediaResponse? preview;
     private bool showSuccess = false;
-    
 
-    private bool IsValidUrl => !string.IsNullOrWhiteSpace(urlInput) && 
+    private bool IsValidUrl => !string.IsNullOrWhiteSpace(urlInput) &&
                               (urlInput.StartsWith("http://") || urlInput.StartsWith("https://"));
-
-
-   /* protected override async Task OnInitializedAsync()
-    {
-        await LoadHistory();
-    }*/
-
-   @*private async Task LoadHistory()
-    {
-        try 
-        {
-            var result = await MediaClient.GetMediaAsync();
-            downloadHistory = result.ToList();
-        }
-        catch (Exception ex) 
-        {
-            Console.WriteLine($"Could not load history: {ex.Message}");
-        }
-    }*@
 
     private async Task AnalyzeUrl()
     {
         errorMessage = "";
 
-        if (!IsValidUrl) 
-        { 
-            errorMessage = "Please enter a valid URL starting with http:// or https://"; 
-            return; 
+        if (!IsValidUrl)
+        {
+            errorMessage = "Please enter a valid URL starting with http:// or https://";
+            return;
         }
 
-       isBusy = true;
+        isBusy = true;
         StateHasChanged();
 
         try
@@ -680,7 +641,7 @@ style="max-width: 600px; font-size: 0.9rem;">
                 errorMessage = "Could not find video info. Check the link!";
             }
         }
-       catch
+        catch
         {
             errorMessage = "Server error.";
         }
@@ -689,7 +650,6 @@ style="max-width: 600px; font-size: 0.9rem;">
             isBusy = false;
             StateHasChanged();
         }
-    
     }
 
     private readonly string[] progressStages = new[]
@@ -714,11 +674,7 @@ style="max-width: 600px; font-size: 0.9rem;">
         var downloadUrl = MediaClient.BuildDownloadUrl(urlInput, type);
         await JS.InvokeVoidAsync("location.assign", downloadUrl);
 
-        // The actual file transfer happens via browser navigation, so we don't get
-        // real byte-level progress from the server. Instead of a blank spinner for
-        // ~7s, animate a staged progress bar with rotating status text so the wait
-        // feels purposeful rather than stalled.
-        const int totalTicks = 28; // 28 * 250ms ≈ 7s
+        const int totalTicks = 28;
         for (int i = 0; i < totalTicks; i++)
         {
             await Task.Delay(250);
@@ -750,6 +706,8 @@ style="max-width: 600px; font-size: 0.9rem;">
         ("fb.watch", "Facebook", "bi-facebook"),
         ("twitch.tv", "Twitch", "bi-twitch"),
         ("soundcloud.com", "SoundCloud", "bi-music-note-beamed"),
+        ("pinterest.com", "Pinterest", "bi-pinterest"),
+        ("pin.it", "Pinterest", "bi-pinterest"),
     };
 
     private (string Name, string Icon) DetectPlatform(string url)
@@ -767,50 +725,33 @@ style="max-width: 600px; font-size: 0.9rem;">
         return ("Media", "bi-play-circle-fill");
     }
 
-private string MediaUrl { get; set; } = string.Empty;
+    private string MediaUrl { get; set; } = string.Empty;
 
-    // Handles clearing the field array
     private void ClearInput()
     {
         urlInput = string.Empty;
     }
-    // Missing method causing your CopyToClipboard error:
+
     private async Task CopyToClipboard(string text)
     {
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
-        
     }
 
-   @* private async Task ClearHistory()
-{
-    try 
+    private async Task PasteFromClipboard()
     {
-        await MediaClient.ClearHistoryAsync();
-        downloadHistory.Clear(); // Empty the local list so the UI updates
-        StateHasChanged();
-    }
-    catch 
-    {
-        errorMessage = "Failed to clear history.";
-    }
-}*@
-
-private async Task PasteFromClipboard()
-{
-    try
-    {
-        // Call our JS function to get clipboard data safely
-        var text = await JS.InvokeAsync<string>("clipboardExtensions.readText");
-        
-        if (!string.IsNullOrWhiteSpace(text))
+        try
         {
-            urlInput = text;
-            StateHasChanged(); // Force the UI input to update visually
+            var text = await JS.InvokeAsync<string>("clipboardExtensions.readText");
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                urlInput = text;
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "Clipboard access was denied by your browser.";
         }
     }
-    catch (Exception)
-    {
-        errorMessage = "Clipboard access was denied by your browser.";
-    }
-}
 }
