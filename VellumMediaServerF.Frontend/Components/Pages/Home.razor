@@ -416,43 +416,50 @@ style="max-width: 600px; font-size: 0.9rem;">
         </div>
     }
 
-  @*<div class="history-section mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-2 " data-bs-toggle="tooltip"
-             data-bs-placement="top" title="Downloads History">
-        <h6 class="mb-0 ">Recent Downloads</h6>
-        
-        @if (downloadHistory.Any())
-        {
-            <button class="btn btn-sm btn-link text-danger p-0 text-decoration-none" data-bs-toggle="tooltip"
-             data-bs-placement="top" title="Clear History"@onclick=
-            "ClearHistory">
+    @if (showClipboardSuggestion && !string.IsNullOrEmpty(clipboardSuggestion))
+    {
+        <div class="alert alert-primary d-flex justify-content-between align-items-center fade show" role="alert">
+            <div class="text-truncate me-2">
+                <i class="bi bi-clipboard-check me-1"></i>
+                Found a link in your clipboard — want to use it?
+            </div>
+            <div class="d-flex gap-2 flex-shrink-0">
+                <button type="button" class="btn btn-sm btn-primary" @onclick="UseClipboardSuggestion">Use it</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => showClipboardSuggestion = false">Dismiss</button>
+            </div>
+        </div>
+    }
+
+  @if (downloadHistory.Any())
+  {
+    <div class="history-section mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">Recent Downloads</h6>
+            <button class="btn btn-sm btn-link text-danger p-0 text-decoration-none" @onclick="ClearHistory">
                 Clear History
             </button>
-        }
-    </div>
-    
-    <div class="list-group">
-        @foreach (var item in downloadHistory.OrderByDescending(x => x.SavedAt).Take(5))
-        {
-            @* --- REPLACE YOUR OLD DIV WITH THIS ONE --- 
-            <div class="list-group-item d-flex align-items-center rounded mb-2 border-0 shadow-sm">
-                @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
-                {
-                    <img src="@item.ThumbnailUrl" class="rounded me-3" style="width: 80px; height: 45px; object-fit: cover;" />
-                }
-                <div class="flex-grow-1 text-truncate">
-                    <small class="text-muted d-block">@item.SavedAt.ToLocalTime().ToString("g")</small>
-                    <span class="text-dark">@item.Title</span>
+        </div>
+
+        <div class="list-group">
+            @foreach (var item in downloadHistory.OrderByDescending(x => x.SavedAt).Take(5))
+            {
+                <div class="list-group-item d-flex align-items-center rounded mb-2 border-0 shadow-sm">
+                    @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
+                    {
+                        <img src="@item.ThumbnailUrl" class="rounded me-3" style="width: 80px; height: 45px; object-fit: cover;" />
+                    }
+                    <div class="flex-grow-1 text-truncate">
+                        <small class="text-muted d-block">@item.SavedAt.ToLocalTime().ToString("g")</small>
+                        <span class="text-dark">@item.Title</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary border-0" title="Copy title" @onclick='() => CopyToClipboard(item.Title)'>
+                        <i class="bi bi-copy"></i>
+                    </button>
                 </div>
-                <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="tooltip" 
-                data-bs-placement="top" title="Copy To Clipboard"@onclick='() => 
-                    CopyToClipboard(item.Title)'>
-                    <i class="bi bi-copy"></i>
-                </button>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>*@
+  }
 </div>
 
 
@@ -492,6 +499,17 @@ style="max-width: 600px; font-size: 0.9rem;">
                     <div class="vms-modal-body">
                         <p class="vms-modal-eyebrow">Ready to save</p>
                         <h5 class="vms-modal-title">@preview.Title</h5>
+
+                        <div class="mt-3">
+                            <label for="qualitySelect" class="form-label small text-muted mb-1">Video quality</label>
+                            <select id="qualitySelect" class="form-select form-select-sm" @bind="selectedQuality">
+                                <option value="best">Best available</option>
+                                <option value="1080">1080p</option>
+                                <option value="720">720p</option>
+                                <option value="480">480p</option>
+                            </select>
+                            <div class="form-text">Doesn't apply to MP3 audio — audio always uses the best available quality.</div>
+                        </div>
 
                         <div class="d-grid gap-2 mt-3">
                             <button class="vms-download-btn vms-download-btn-video" @onclick='() => Download("video")'>
@@ -717,22 +735,28 @@ style="max-width: 600px; font-size: 0.9rem;">
     private bool isDownloading = false;
     
     private string errorMessage = "";
-    //private List<MediaSummary> downloadHistory = new();
+    private List<MediaSummary> downloadHistory = new();
     private bool showDownloadModal = false;
     private AnalyzeMediaResponse? preview; 
     private bool showSuccess = false;
+
+    private bool showClipboardSuggestion = false;
+    private string clipboardSuggestion = "";
+    private bool hasCheckedClipboard = false;
+
+    private string selectedQuality = "best";
     
 
     private bool IsValidUrl => !string.IsNullOrWhiteSpace(urlInput) && 
                               (urlInput.StartsWith("http://") || urlInput.StartsWith("https://"));
 
 
-   /* protected override async Task OnInitializedAsync()
+   protected override async Task OnInitializedAsync()
     {
         await LoadHistory();
-    }*/
+    }
 
-   @*private async Task LoadHistory()
+   private async Task LoadHistory()
     {
         try 
         {
@@ -743,7 +767,7 @@ style="max-width: 600px; font-size: 0.9rem;">
         {
             Console.WriteLine($"Could not load history: {ex.Message}");
         }
-    }*@
+    }
 
     private async Task AnalyzeUrl()
     {
@@ -782,6 +806,46 @@ style="max-width: 600px; font-size: 0.9rem;">
     
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasCheckedClipboard)
+        {
+            hasCheckedClipboard = true;
+            await CheckClipboardForLink();
+        }
+    }
+
+    private async Task CheckClipboardForLink()
+    {
+        try
+        {
+            // Browsers require the page to have focus (and sometimes a prior
+            // permission grant) for a programmatic clipboard read — this can
+            // silently fail/throw on first load, which is fine, we just skip
+            // the suggestion rather than erroring out to the user.
+            var text = await JS.InvokeAsync<string>("clipboardExtensions.readText");
+
+            if (!string.IsNullOrWhiteSpace(text)
+                && (text.StartsWith("http://") || text.StartsWith("https://"))
+                && DetectPlatform(text).Name != "Media") // only suggest recognized platforms
+            {
+                clipboardSuggestion = text;
+                showClipboardSuggestion = true;
+                StateHasChanged();
+            }
+        }
+        catch
+        {
+            // Clipboard read denied/unavailable — just don't show a suggestion.
+        }
+    }
+
+    private void UseClipboardSuggestion()
+    {
+        urlInput = clipboardSuggestion;
+        showClipboardSuggestion = false;
+    }
+
     private readonly string[] progressStages = new[]
     {
         "Contacting server…",
@@ -801,7 +865,7 @@ style="max-width: 600px; font-size: 0.9rem;">
         downloadStage = progressStages[0];
         await InvokeAsync(StateHasChanged);
 
-        var downloadUrl = MediaClient.BuildDownloadUrl(urlInput, type);
+        var downloadUrl = MediaClient.BuildDownloadUrl(urlInput, type, selectedQuality);
         await JS.InvokeVoidAsync("location.assign", downloadUrl);
 
         // The actual file transfer happens via browser navigation, so we don't get
@@ -822,11 +886,49 @@ style="max-width: 600px; font-size: 0.9rem;">
         showSuccess = true;
         await InvokeAsync(StateHasChanged);
 
+        await SaveToHistory();
+
         await Task.Delay(2500);
         isDownloading = false;
         showSuccess = false;
         downloadProgress = 0;
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SaveToHistory()
+    {
+        if (preview is null) return;
+        try
+        {
+            await MediaClient.AddMediaAsync(new MediaDetails(
+                Guid.NewGuid(),
+                preview.Title,
+                urlInput,
+                preview.ThumbnailUrl,
+                DateTime.UtcNow
+            ));
+            await LoadHistory();
+        }
+        catch (Exception ex)
+        {
+            // History is a nice-to-have — don't block/interrupt the download
+            // flow itself if saving the record fails for any reason.
+            Console.WriteLine($"Could not save to history: {ex.Message}");
+        }
+    }
+
+    private async Task ClearHistory()
+    {
+        try 
+        {
+            await MediaClient.ClearHistoryAsync();
+            downloadHistory.Clear();
+            StateHasChanged();
+        }
+        catch 
+        {
+            errorMessage = "Failed to clear history.";
+        }
     }
 
     private static readonly (string Match, string Name, string Icon)[] platformMap = new[]
@@ -874,20 +976,6 @@ private string MediaUrl { get; set; } = string.Empty;
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
         
     }
-
-   @* private async Task ClearHistory()
-{
-    try 
-    {
-        await MediaClient.ClearHistoryAsync();
-        downloadHistory.Clear(); // Empty the local list so the UI updates
-        StateHasChanged();
-    }
-    catch 
-    {
-        errorMessage = "Failed to clear history.";
-    }
-}*@
 
 private async Task PasteFromClipboard()
 {
