@@ -40,16 +40,23 @@ public async Task ClearHistoryAsync()
     await httpClient.DeleteAsync("medias/clear-history");
 }
 
-public string BuildDownloadUrl(string url, string type)
+// Added "quality" (optional, defaults to "best" server-side if omitted) so the
+// resolution picker in Home.razor can request a specific max height for video
+// downloads. Doesn't affect mp3 downloads — audio always uses best quality.
+public string BuildDownloadUrl(string url, string type, string? quality = null)
 {
     if (httpClient.BaseAddress is null)
         throw new InvalidOperationException("HttpClient BaseAddress is not configured.");
 
     var encodedUrl = Uri.EscapeDataString(url);
-    return new Uri(httpClient.BaseAddress, $"medias/download?url={encodedUrl}&type={type}").ToString();
+    var relative = $"medias/download?url={encodedUrl}&type={type}";
+    if (!string.IsNullOrWhiteSpace(quality))
+    {
+        relative += $"&quality={Uri.EscapeDataString(quality)}";
+    }
+    return new Uri(httpClient.BaseAddress, relative).ToString();
 }
 
 
 
 }
-
