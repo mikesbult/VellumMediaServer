@@ -900,13 +900,14 @@ style="max-width: 600px; font-size: 0.9rem;">
         if (preview is null) return;
         try
         {
-            await MediaClient.AddMediaAsync(new MediaDetails(
-                Guid.NewGuid(),
-                preview.Title,
-                urlInput,
-                preview.ThumbnailUrl,
-                DateTime.UtcNow
-            ));
+            await MediaClient.AddMediaAsync(new MediaDetails
+            {
+                Id = Guid.NewGuid(),
+                Title = preview.Title,
+                SourceUrl = urlInput,
+                ThumbnailUrl = preview.ThumbnailUrl,
+                SavedAt = DateTime.UtcNow
+            });
             await LoadHistory();
         }
         catch (Exception ex)
