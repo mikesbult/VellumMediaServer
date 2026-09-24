@@ -751,10 +751,13 @@ style="max-width: 600px; font-size: 0.9rem;">
                               (urlInput.StartsWith("http://") || urlInput.StartsWith("https://"));
 
 
-   protected override async Task OnInitializedAsync()
-    {
-        await LoadHistory();
-    }
+   // LoadHistory() intentionally does NOT run in OnInitializedAsync — that
+   // method blocks the page's initial render in Blazor Server. If the
+   // backend API (a separate Render free-tier service) happens to be
+   // asleep/cold, that HTTP call could take 50+ seconds or hit the
+   // HttpClient's 100s timeout, making the whole site appear to hang on
+   // load. It runs in OnAfterRenderAsync instead, after the page has
+   // already rendered, and just fills in once it arrives.
 
    private async Task LoadHistory()
     {
@@ -762,6 +765,7 @@ style="max-width: 600px; font-size: 0.9rem;">
         {
             var result = await MediaClient.GetMediaAsync();
             downloadHistory = result.ToList();
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex) 
         {
@@ -811,6 +815,10 @@ style="max-width: 600px; font-size: 0.9rem;">
         if (firstRender && !hasCheckedClipboard)
         {
             hasCheckedClipboard = true;
+            // Fire-and-forget style: don't await these inline in a way that
+            // delays anything, but do let them run and update the UI once
+            // they resolve. The page itself is already rendered by this point.
+            _ = LoadHistory();
             await CheckClipboardForLink();
         }
     }
