@@ -7,7 +7,18 @@ public class MediaClient(HttpClient httpClient)
         => await httpClient.GetFromJsonAsync<MediaSummary[]>("medias") ?? [];
         
     public async Task AddMediaAsync(MediaDetails media)
-    => await httpClient.PostAsJsonAsync("medias", media);
+    {
+        // PostAsJsonAsync does NOT throw on a non-success status code by
+        // default — a validation rejection (e.g. title too long) would
+        // previously fail completely silently, with nothing showing up
+        // anywhere. Force it to throw so failures are actually visible.
+        var response = await httpClient.PostAsJsonAsync("medias", media);
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"AddMediaAsync failed ({(int)response.StatusCode} {response.StatusCode}): {body}");
+        }
+    }
 
 
     public async Task <MediaDetails> GetMediaAsync(Guid id)
