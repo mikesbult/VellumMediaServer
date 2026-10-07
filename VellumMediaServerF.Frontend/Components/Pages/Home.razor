@@ -500,27 +500,39 @@ style="max-width: 600px; font-size: 0.9rem;">
                         <p class="vms-modal-eyebrow">Ready to save</p>
                         <h5 class="vms-modal-title">@preview.Title</h5>
 
-                        <div class="mt-3">
-                            <label for="qualitySelect" class="form-label small text-muted mb-1">Video quality</label>
-                            <select id="qualitySelect" class="form-select form-select-sm" @bind="selectedQuality">
-                                <option value="best">Best available</option>
-                                <option value="1080">1080p</option>
-                                <option value="720">720p</option>
-                                <option value="480">480p</option>
-                            </select>
-                            <div class="form-text">Doesn't apply to MP3 audio — audio always uses the best available quality.</div>
-                        </div>
+                        @if (preview.Type == "image")
+                        {
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="vms-download-btn vms-download-btn-video" @onclick='() => Download("image")'>
+                                    <i class="bi bi-image-fill"></i>
+                                    <span>Download Image</span>
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="mt-3">
+                                <label for="qualitySelect" class="form-label small text-muted mb-1">Video quality</label>
+                                <select id="qualitySelect" class="form-select form-select-sm" @bind="selectedQuality">
+                                    <option value="best">Best available</option>
+                                    <option value="1080">1080p</option>
+                                    <option value="720">720p</option>
+                                    <option value="480">480p</option>
+                                </select>
+                                <div class="form-text">Doesn't apply to MP3 audio — audio always uses the best available quality.</div>
+                            </div>
 
-                        <div class="d-grid gap-2 mt-3">
-                            <button class="vms-download-btn vms-download-btn-video" @onclick='() => Download("video")'>
-                                <i class="bi bi-camera-reels-fill"></i>
-                                <span>Download MP4 Video</span>
-                            </button>
-                            <button class="vms-download-btn vms-download-btn-audio" @onclick='() => Download("mp3")'>
-                                <i class="bi bi-music-note-beamed"></i>
-                                <span>Download MP3 Audio</span>
-                            </button>
-                        </div>
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="vms-download-btn vms-download-btn-video" @onclick='() => Download("video")'>
+                                    <i class="bi bi-camera-reels-fill"></i>
+                                    <span>Download MP4 Video</span>
+                                </button>
+                                <button class="vms-download-btn vms-download-btn-audio" @onclick='() => Download("mp3")'>
+                                    <i class="bi bi-music-note-beamed"></i>
+                                    <span>Download MP3 Audio</span>
+                                </button>
+                            </div>
+                        }
                     </div>
                 }
                 else
