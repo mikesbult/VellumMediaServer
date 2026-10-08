@@ -500,7 +500,7 @@ style="max-width: 600px; font-size: 0.9rem;">
                         <p class="vms-modal-eyebrow">Ready to save</p>
                         <h5 class="vms-modal-title">@preview.Title</h5>
 
-                        @if (preview.Type == "image")
+                        @if (preview.MediaType == "image")
                         {
                             <div class="d-grid gap-2 mt-3">
                                 <button class="vms-download-btn vms-download-btn-video" @onclick='() => Download("image")'>
